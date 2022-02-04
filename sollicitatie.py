@@ -1,5 +1,4 @@
 # Array with all the questions that gets asked
-
 questions = {
     "years": [
         "Hoeveel jaar praktijkervaring heeft u met dieren-dressuur",
@@ -24,8 +23,9 @@ questions = {
     ]
 }
 
-# Array with the questions that gets asked with the users gender
 
+
+# Array with the questions that gets asked with the users gender
 questions_gender = {
     "male": [
         "Is uw snor breder dan 10 cm"
@@ -46,34 +46,39 @@ answers = {
 }
 
 
-# Welcomes the user, and give instructions how the user must answer the questions
-
-print(
-    "LET OP, als er wordt gevraagd of je een man bent, en je vult iets anders dan 'ja', wordt het als 'nee' opgevat"
-    "\n"
-    "LET OP, als je niks invult, of iets anders dan 'ja' antwoord, wordt het automatisch als 'nee' opgevat"
-    "\n"
-    "LET OP, als er gevraagd wordt hoeveel jaar u iets heeft, of wat uw lengte is, hoef je alleen een getal in te vullen. Anders wordt het als '0' opgevat"
-    "\n"
-)
-
-
-# Ask if the user is a male, and make a variable with the gender to give the user specific gender questions
-
-male = input("Bent u een man? ").lower()
+# Starting explanation how the program works
+def start_explanation():
+    print(
+        "LET OP, als er wordt gevraagd of je een man bent, en je vult iets anders dan 'ja', wordt het als 'nee' opgevat",
+        "LET OP, als je niks invult, of iets anders dan 'ja' antwoord, wordt het automatisch als 'nee' opgevat",
+        "LET OP, als er gevraagd wordt hoeveel jaar u iets heeft, of wat uw lengte is, hoef je alleen een getal in te vullen. Anders wordt het als '0' opgevat",
+        "",
+        sep="\n", end="\n"
+    )
 
 
-if male == "ja":
-    gender = "male"
 
-else:
-    gender = "female"
+def user_gender() -> str:
+    genders = ("man", "vrouw")
 
-questions['strings'] += questions_gender[gender] # Add the questions to the questions string array
+    choosing_answer = True
+
+    while choosing_answer:
+        gender = input(f"Wat voor geslacht bent u? U kunt kiezen tussen  {' / '.join(genders)}: ").lower()
+        
+        if gender in genders:
+            choosing_answer  = False
+
+    return gender
+
+
+"""
+#questions['strings'] += questions_gender[gender] # Add the questions to the questions string array
+
+
 
 
 # Ask the questions that need a year, and add them to the answers array
-
 for question in questions['years']:
     question += "? "
 
@@ -124,12 +129,25 @@ def application_validation():
             validation = False
 
     return validation # Return if the user has answered everything correctly
+"""
 
 
-# Return a text, if the user has correctly answered all the questions
+def main():
+    start_explanation()
 
-if application_validation():
-    print("Uw applicatie is goedgekeurd.")
+    gender = user_gender()
 
-else:
-    print("Uw applicatie is niet goedgekeurd.")
+
+    suited = application_validation()
+
+    if suited:
+        print("Uw applicatie is goedgekeurd.")
+    else:
+        print("Uw applicatie is niet goedgekeurd.")
+
+
+
+
+# When the program starts
+if __name__ == "__main__":
+    main()    
