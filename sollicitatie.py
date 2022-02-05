@@ -1,49 +1,37 @@
-# Array with all the questions that gets asked
+# All the questions
 questions = {
-    "years": [
-        "Hoeveel jaar praktijkervaring heeft u met dieren-dressuur",
-        "Hoeveel jaar praktijkervaring heeft u met jongleren",
-        "Hoeveel jaar praktijkervaring heeft u met acrobatiek",
-        "Wat is uw lengte (in cm)"
-    ],
-    
-    "strings": [ 
-        "Bent u in het bezit van een Diploma MBO-4 ondernemen",
-        "Bent u in het bezit van een geldig Vrachtwagen rijbewijs",
-        "Bent u in het bezit van een hoge hoed",
-        "Wat is uw lichaamsgewicht",
-        "Heeft u het Certificaat 'Overleven met gevaarlijk personeel"
-    ],
-
-    "useless": [
-        "Heeft u huisdieren",
-        "Bent u in het bezit van een motor rijbewijs",
-        "Heeft u een kind",
-        "Wat is uw favoriete toetje"
-    ]
-}
-
-
-
-# Array with the questions that gets asked with the users gender
-questions_gender = {
-    "male": [
-        "Is uw snor breder dan 10 cm"
-    ],
-
-    "female": [
-        "Draagt u rood krulhaar langer dan 20 cm"
-    ]
-}
-
-
-answers = {
-    "years": {
-        "need": [4, 5, 3, 150],
-        "answer": []
+    "important": {
+        "Hoeveel jaar praktijkervaring heeft u met dieren-dressuur": 4,
+        "Hoeveel jaar praktijkervaring heeft u met jongleren": 5,
+        "Hoeveel jaar praktijkervaring heeft u met acrobatiek": 3,
+        "Wat is uw lengte (in cm)": 150,
+        "Bent u in het bezit van een Diploma MBO-4 ondernemen": "ja",
+        "Bent u in het bezit van een geldig Vrachtwagen rijbewijs": "ja",
+        "Bent u in het bezit van een hoge hoed": "ja",
+        "Wat is uw lichaamsgewicht": "ja",
+        "Heeft u het Certificaat 'Overleven met gevaarlijk personeel": "ja"
     },
-    "strings": []
+
+    "useless": {
+        "Heeft u huisdieren": "",
+        "Bent u in het bezit van een motor rijbewijs": "",
+        "Heeft u een kind": "",
+        "Wat is uw favoriete toetje": ""
+    }
 }
+
+# Questions for a specific gender
+gender_questions = {
+    "man": {
+        "Is uw snor breder dan 10 cm": ""
+    },
+
+    "vrouw": {
+        "Draagt u rood krulhaar langer dan 20 cm": ""
+    }
+}
+
+user_failed = False # If the user failed the specific questions
 
 
 # Starting explanation how the program works
@@ -57,93 +45,87 @@ def start_explanation():
     )
 
 
-
+# Ask the gender of the user
 def user_gender() -> str:
-    genders = ("man", "vrouw")
+    choosing_answer = True # If the user did not choose a valid answer
 
-    choosing_answer = True
+    gender_options = " / ".join(gender_questions) # All the gender options
 
     while choosing_answer:
-        gender = input(f"Wat voor geslacht bent u? U kunt kiezen tussen  {' / '.join(genders)}: ").lower()
-        
-        if gender in genders:
+        gender = input(f"Wat voor geslacht bent u? U kunt kiezen tussen {gender_options}: ").lower()
+
+        # If the users answer is a valid option
+        if gender in gender_questions:
             choosing_answer  = False
 
     return gender
 
 
-"""
-#questions['strings'] += questions_gender[gender] # Add the questions to the questions string array
+# Add the question(s) for the users gender
+def add_gender_questions(gender:str):
+    questions[gender] = gender_questions[gender]
 
 
+# Add the answer of the user
+def add_user_answer(question_answer, answer:str):
+    question_answer = answer
 
 
-# Ask the questions that need a year, and add them to the answers array
-for question in questions['years']:
-    question += "? "
+# Ask all the questions
+def ask_questions():
+    global user_failed # If the user failed the specific questions
 
-    answer = input(question)
+    # Loop through every key
+    for key, key_questions in zip(questions, questions.values()):
+        # loop through every question
+        for question in key_questions:
+            question_answer = questions[key][question] # Specific answer for the question
+            choosing_answer = True # If the user did not choose a valid answer
+            correct_answer = False # If the user correctly answered the question 
 
-    answers['years']['answer'].append(answer)
+            # If the user did not choose a valid answer
+            while choosing_answer:
+                answer = input(f"{question}?: ").lower()
 
-
-# Ask the questions that only need a 'yes' or 'no', and add them to the answers array
-
-for question in questions['strings']:
-    question += "? "
-
-    answer = input(question).lower()
-
-    answers['strings'].append(answer)
-
-
-# Ask the questions that don't matter
-
-for question in questions['useless']:
-    question += "? "
-
-    input(question)
+                # If the user gave an number as answer
+                if answer.isdigit():
+                    answer = int(answer) # Change the answer of the user to a number
 
 
-# Check if the questions are correctly answered
+                # If the question need a specific answer
+                if question_answer:
+                    # If the types of the specific answer and the answer of the user are the same
+                    if type(question_answer) == type(answer):
+                        # If the answer of the user is not the same as the answer the question need
+                        if question_answer != answer:
+                            user_failed = True # The user failed the application
 
-def application_validation():
+                # If the type of the answer the question need and the answer the user gave are not the same
+                if type(question_answer) != type(answer) or not answer: 
+                    error_message = "Kies een even getal (boven de -1)" if isinstance(question_answer, int) else "Kies nee/ja" # Error message what the user did wrong
+                else:
+                    correct_answer = True # The user correctly answered the question
 
-    validation = True
-
-    # Check all the questions (what the user can answer with a year) to see if is equal or higher than the years that are needed
-    
-    try:
-        for num, value in enumerate( answers['years']['answer'] ):
-                if int(value) < answers['years']['need'][num]:
-                    validation = False
-    
-    except:
-        validation = False
+                # If the user correctly answered the question
+                if correct_answer:
+                    add_user_answer(question_answer, answer) # Add the answer to the questions dictionary
+                    choosing_answer = False # Go to the next question
+                else:
+                    print(error_message) # Show what the user did wrong
 
 
-    # Check all the questions (what the user can answer with 'ja' or 'nee') to see if all the questions are answered with 'yes'
-    
-    for value in answers['strings']:
-        if value != "ja":
-            validation = False
-
-    return validation # Return if the user has answered everything correctly
-"""
+# Show if the user is a good candidate
+def show_result():
+    message = "Uw applicatie is niet goedgekeurd." if user_failed else "Uw applicatie is goedgekeurd."
+    print(message)
 
 
 def main():
-    start_explanation()
-
-    gender = user_gender()
-
-
-    suited = application_validation()
-
-    if suited:
-        print("Uw applicatie is goedgekeurd.")
-    else:
-        print("Uw applicatie is niet goedgekeurd.")
+    start_explanation() # Rules / explanation of the application
+    gender = user_gender() # Ask the gender of the user
+    add_gender_questions(gender) # Add the gender questions
+    ask_questions() # Ask all the questions
+    show_result() # Show if the user is a good candidate
 
 
 
